@@ -17,7 +17,7 @@ import static org.junit.Assert.assertNotNull;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class EntityTests {
+public class EntityTest {
 
     @Autowired
     ProductRepository productRepository;
