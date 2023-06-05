@@ -32,6 +32,4 @@ public class Product {
     @NonNull
     @Column
     String currency;
-
-
 }
