@@ -29,5 +29,9 @@ public class Product {
     @Column
     BigDecimal price;
 
+    @NonNull
+    @Column
+    String currency;
+
 
 }

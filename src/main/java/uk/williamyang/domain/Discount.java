@@ -21,7 +21,7 @@ public class Discount {
     private String code;
 
     @NonNull
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Product product;
 
     @NonNull

@@ -1,11 +1,10 @@
 package uk.williamyang.domain;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import uk.williamyang.repo.BasketRepository;
+import uk.williamyang.repo.DiscountRepository;
 import uk.williamyang.repo.ProductRepository;
 
 import java.math.BigDecimal;
@@ -16,7 +15,6 @@ import static org.junit.Assert.assertNotNull;
 
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class RepoTest {
 
     @Autowired
@@ -25,13 +23,16 @@ public class RepoTest {
     @Autowired
     BasketRepository basketRepository;
 
+    @Autowired
+    DiscountRepository discountRepository;
+
     // Other repositories
 
     @Test
     public void testSaveAndFindProduct() {
 
         // Create a product
-        Product product = new Product("","Apple", BigDecimal.valueOf(1.99));
+        Product product = new Product("Apple-1","Apple", BigDecimal.valueOf(1999),"HKD");
 
         // Save product
         productRepository.save(product);
@@ -41,6 +42,8 @@ public class RepoTest {
         assertEquals(found.getName(), "Apple");
 
     }
+
+
 
     @Test
     public void testSaveAndFindBasket() {
@@ -64,6 +67,26 @@ public class RepoTest {
 
     }
 
-    // Other tests here
+    @Test
+    public void testSaveAndFindDiscount() {
+
+        // Create a test discount
+        Discount discount = new Discount();
+        discount.setCode("DISCOUNT1");
+        discount.setDiscountPercentage(0.25);
+        Product product = new Product("Apple-2","Apple", BigDecimal.valueOf(6999),"HKD");
+        discount.setProduct(product);
+
+        // Save the discount
+        discountRepository.save(discount);
+
+        // Find the saved discount by ID
+        Discount foundDiscount = discountRepository.findById(discount.getId()).get();
+
+        // Assertions
+        assertEquals(foundDiscount.getDiscountPercentage(), discount.getDiscountPercentage());
+        assertEquals(foundDiscount.getProduct().getId(), discount.getProduct().getId());
+
+    }
 
 }
