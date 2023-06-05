@@ -3,6 +3,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,9 +21,8 @@ public class Basket {
     @Column
     private String code;
 
-    @NonNull
-    @OneToMany(cascade = CascadeType.PERSIST)
-    private List<BasketItem> items;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<BasketItem> items = new ArrayList<>();
 
     @NonNull
     @Column

@@ -128,16 +128,17 @@ public class BasketController {
         Optional<Basket> basketOptional = basketRepository.findByCode(basketCode);
         if (basketOptional.isPresent()) {
             Basket basket = basketOptional.get();
-            Optional<BasketItem> basketItemOptional = basket.getItems().stream().filter(item -> item.getId().equals(itemId)).findFirst();
+            List<BasketItem> items = new ArrayList<>(basket.getItems());
+            Optional<BasketItem> basketItemOptional = items.stream().filter(item -> item.getId().equals(itemId)).findFirst();
             if (basketItemOptional.isPresent()) {
                 BasketItem basketItem = basketItemOptional.get();
                 basket.setTotal(
-                        (basket.getTotal() != null ? basket.getTotal() : BigDecimal.ZERO)
-                                .subtract(
-                                        (new BigDecimal(basketItem.getQuantity()))
-                                                .multiply(basketItem.getProduct().getPrice()))
+                        (basket.getTotal() != null ? basket.getTotal() : BigDecimal.ZERO).subtract(
+                                (new BigDecimal(basketItem.getQuantity())).multiply(basketItem.getProduct().getPrice())
+                        )
                 );
-                basket.getItems().remove(basketItem);
+                items.remove(basketItem);
+                basket.setItems(items);
                 basketRepository.save(basket);
                 basketItemRepository.delete(basketItem);
                 return ResponseEntity.noContent().build();

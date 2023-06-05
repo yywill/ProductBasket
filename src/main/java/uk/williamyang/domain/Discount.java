@@ -3,6 +3,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,7 +25,7 @@ public class Discount {
     private String name;
 
     @OneToMany(cascade = CascadeType.DETACH)
-    private List<Product> product;
+    private List<Product> product = new ArrayList<>();
 
     @NonNull
     @Column
