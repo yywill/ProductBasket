@@ -1,6 +1,8 @@
 package uk.williamyang.controllers;
 
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -43,6 +45,17 @@ class BasketControllerTest {
     @Mock
     private CustomerRepository customerRepository;
 
+    @Mock
+    private ProductRepository productRepository;
+
+    @BeforeEach
+    void setUp() {
+        // Given
+        Product product = new Product("Product-1", "Product 1", new BigDecimal("10.00"), "HKD");
+        product.setId(1L);
+
+        given(productRepository.findById(anyLong())).willReturn(Optional.of(product));
+    }
 
     @Test
     void testCreateBasket() {
@@ -102,12 +115,15 @@ class BasketControllerTest {
 
         BasketItem basketItem = new BasketItem();
         basketItem.setId(2L);
-        basketItem.setProduct(new Product("Product-1","Product 1", new BigDecimal("10.00"), "HKD"));
+        Product product = new Product("Product-1","Product 1", new BigDecimal("10.00"), "HKD");
+        product.setId(1L);
+        basketItem.setProduct(product);
         basketItem.setQuantity(2);
 
         given(basketRepository.findByCode("abc")).willReturn(Optional.of(basket));
         given(basketItemRepository.save(basketItem)).willReturn(basketItem);
 
+        given(productRepository.findById(1L)).willReturn(Optional.of(basketItem.getProduct()));
         // When
         ResponseEntity<BasketItem> response = basketController.addBasketItem("abc", basketItem);
 
@@ -119,14 +135,18 @@ class BasketControllerTest {
     @Test
     void testUpdateBasketItem() {
         // Given
-        Basket basket = new Basket("code-1", new BigDecimal(0));
+        Basket basket = new Basket("code-1", new BigDecimal(20));
 
 
         BasketItem basketItem = new BasketItem();
         basketItem.setId(2L);
-        basketItem.setProduct(new Product("Product-1","Product 1", new BigDecimal("10.00"), "HKD"));
+        Product product = new Product("Product-1","Product 1", new BigDecimal("10.00"), "HKD");
+        product.setId(1L);
+
         basketItem.setQuantity(2);
         basketItem.setBasket(basket);
+        basketItem.setProduct(product);
+
         basket.setItems(Collections.singletonList(basketItem));
 
         given(basketRepository.save(basket)).willReturn(basket);
@@ -136,8 +156,15 @@ class BasketControllerTest {
 
         BasketItem updatedBasketItem = new BasketItem();
         updatedBasketItem.setId(2L);
-        updatedBasketItem.setProduct(new Product("Product-2","Product 2", new BigDecimal("20.00"), "HKD"));
+
+        Product productUpdated = new Product("Product-1","Product 1", new BigDecimal("10.00"), "HKD");
+        productUpdated.setId(2L);
+
+        updatedBasketItem.setProduct(productUpdated);
         updatedBasketItem.setQuantity(3);
+
+        given(productRepository.findById(1L)).willReturn(Optional.of(product));
+        given(productRepository.findById(2L)).willReturn(Optional.of(productUpdated));
 
         // When
         ResponseEntity<BasketItem> response = basketController.updateBasketItem("code-1", 2L, updatedBasketItem);
@@ -145,7 +172,7 @@ class BasketControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(basketItem);
-        assertThat(basket.getTotal()).isEqualTo(new BigDecimal("40.00"));
+        assertThat(basket.getTotal()).isEqualTo(new BigDecimal("30.00"));
     }
 
     @Test
@@ -156,11 +183,19 @@ class BasketControllerTest {
         basketItem.setProduct(new Product("Product-1","Product 1", new BigDecimal("10.00"), "HKD"));
         basketItem.setQuantity(2);
 
+        Product product = new Product("Product-1", "Product 1", new BigDecimal("10.00"), "HKD");
+        product.setId(1L);
+        basketItem.setProduct(product);
+
         Basket basket = new Basket("code-1", new BigDecimal(20));
         basket.setItems(Collections.singletonList(basketItem));
 
         given(basketRepository.findByCode("abc")).willReturn(Optional.of(basket));
         given(basketItemRepository.findById(2L)).willReturn(Optional.of(basketItem));
+
+        given(productRepository.findById(1L)).willReturn(Optional.of(product));
+
+
 
         // When
         ResponseEntity<Void> response = basketController.deleteBasketItem("abc", 2L);

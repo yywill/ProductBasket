@@ -94,7 +94,7 @@ public class DiscountController {
                 product.setDiscount(null);
             });
             productRepository.saveAll(products);
-            discountRepository.delete(discount);
+            discountRepository.deleteById(id);
         });
     }
 }

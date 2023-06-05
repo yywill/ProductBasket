@@ -1,0 +1,244 @@
+openapi: 3.0.0
+info:
+  title: Basket Controller API
+  version: 1.0.0
+paths:
+  /api/baskets:
+    post:
+      summary: Create a basket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Basket'
+      responses:
+        200:
+          description: Basket created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basket'
+    get:
+      summary: Get all baskets
+      responses:
+        200:
+          description: A list of baskets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Basket'
+  /api/baskets/{code}:
+    get:
+      summary: Get basket by code
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Basket found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basket'
+        404:
+          description: Basket not found
+  /api/baskets/{basketCode}/items:
+    post:
+      summary: Add a basket item
+      parameters:
+        - name: basketCode
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasketItem'
+      responses:
+        200:
+          description: Basket item added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasketItem'
+        404:
+          description: Basket not found
+  /api/baskets/{basketCode}/items/{itemId}:
+    put:
+      summary: Update a basket item
+      parameters:
+        - name: basketCode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasketItem'
+      responses:
+        200:
+          description: Basket item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasketItem'
+        404:
+          description: Basket or basket item not found
+    delete:
+      summary: Delete a basket item
+      parameters:
+        - name: basketCode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Basket item deleted successfully
+        404:
+          description: Basket or basket item not found
+    get:
+      summary: Get a basket item
+      parameters:
+        - name: basketCode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Basket item found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasketItem'
+        404:
+          description: Basket or basket item not found
+  /api/baskets/{basketCode}/checkout:
+    post:
+      summary: Checkout a basket
+      parameters:
+        - name: basketCode
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Receipt'
+      responses:
+        200:
+          description: Checkout completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receipt'
+        401:
+          description: Invalid API key
+        404:
+          description: Basket not found
+components:
+  schemas:
+    Basket:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        total:
+          type: number
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BasketItem'
+    BasketItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        product:
+          $ref: '#/components/schemas/Product'
+        quantity:
+          type: integer
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        description:
+          type: string
+    Receipt:
+      type: object
+      properties:
+        clientName:
+          type: string
+        date:
+          type: string
+          format: date
+        totalItems:
+          type: integer
+        totalQuantity:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReceiptItem'
+        total:
+          type: number
+    ReceiptItem:
+      type: object
+      properties:
+        productName:
+          type: string
+        quantity:
+          type: integer
+        price:
+          type: number
+        discount:
+          $ref: '#/components/schemas/Discount'
+        subtotal:
+          type: number
+    Discount:
+      type: object
+      properties:
+        name:
+          type: string
+        discountPercentage:
+          type: number

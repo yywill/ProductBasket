@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -113,9 +114,33 @@ public class DiscountControllerTest {
 
     @Test
     public void testDeleteDiscountById() {
-        doNothing().when(discountRepository).deleteById(anyLong());
-        discountController.deleteDiscountById(1L);
-        verify(discountRepository, times(1)).deleteById(anyLong());
+        // Prepare test data
+        Long discountId = 1L;
+        Discount discount = new Discount();
+        discount.setId(discountId);
+
+        Product product1 = new Product();
+        product1.setId(1L);
+        product1.setDiscount(discount);
+
+        Product product2 = new Product();
+        product2.setId(2L);
+        product2.setDiscount(discount);
+
+        List<Product> products = Arrays.asList(product1, product2);
+
+        // Configure mock behavior
+        when(discountRepository.findById(discountId)).thenReturn(Optional.of(discount));
+        when(productRepository.findByDiscount_Id(discountId)).thenReturn(products);
+
+        // Call the method under test
+        discountController.deleteDiscountById(discountId);
+
+        // Verify interactions with the mocks
+        verify(discountRepository, times(1)).findById(discountId);
+        verify(productRepository, times(1)).findByDiscount_Id(discountId);
+        verify(productRepository, times(1)).saveAll(products);
+        verify(discountRepository, times(1)).deleteById(discountId);
     }
 
 }

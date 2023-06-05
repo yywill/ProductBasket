@@ -1,0 +1,188 @@
+openapi: 3.0.0
+info:
+  title: Spring Controllers API
+  version: 1.0.0
+paths:
+  /admin/api/discounts:
+    get:
+      summary: Get all discounts
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        200:
+          description: A list of discounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Discount'
+  /admin/api/discounts/{id}:
+    get:
+      summary: Get discount by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Discount found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Discount'
+        404:
+          description: Discount not found
+    delete:
+      summary: Delete discount by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Discount deleted successfully
+  /admin/api/discounts/product/{productId}:
+    post:
+      summary: Create a discount for a product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Discount'
+      responses:
+        201:
+          description: Discount created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Discount'
+        404:
+          description: Product not found
+  /admin/api/discounts/product/{productId}/discount/{id}:
+    put:
+      summary: Update a discount for a product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Discount'
+      responses:
+        200:
+          description: Discount updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Discount'
+        404:
+          description: Product or discount not found
+  /admin/api/products:
+    get:
+      summary: Get all products
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        200:
+          description: A list of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      summary: Create a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        201:
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+  /admin/api/products/{id}:
+    delete:
+      summary: Delete product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Product deleted successfully
+components:
+  schemas:
+    Discount:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        discountPercentage:
+          type: number
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        description:
+          type: string

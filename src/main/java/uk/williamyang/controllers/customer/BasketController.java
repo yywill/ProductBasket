@@ -32,7 +32,6 @@ public class BasketController {
     private final BasketRepository basketRepository;
     private final BasketItemRepository basketItemRepository;
     private final CustomerRepository customerRepository;
-
     private final ProductRepository productRepository;
 
     public BasketController(BasketRepository basketRepository, BasketItemRepository basketItemRepository, CustomerRepository customerRepository, ProductRepository productRepository) {
@@ -108,18 +107,22 @@ public class BasketController {
             Integer quantity = basketItem.getQuantity();
             BigDecimal total = basket.getTotal() != null ? basket.getTotal() : BigDecimal.ZERO;
 
+            log.info("quantity {}, price {}", quantity, price);
+            log.info("Total before {}", total);
             basket.setTotal(total.subtract((new BigDecimal(quantity)).multiply(price)));
-
+            log.info("Total after {}", basket.getTotal());
             basketItem.setProduct(updatedBasketItem.getProduct());
             basketItem.setQuantity(updatedBasketItem.getQuantity());
             basketItem = basketItemRepository.save(basketItem);
 
             price = product.getPrice();
             quantity = basketItem.getQuantity();
+            log.info("quantity {}, price {}", quantity, price);
             total = basket.getTotal() != null ? basket.getTotal() : BigDecimal.ZERO;
 
             basket.setTotal(total.add((new BigDecimal(quantity)).multiply(price)));
 
+            log.info("Total after {}", basket.getTotal());
             basketRepository.save(basket);
             return ResponseEntity.ok(basketItem);
         } else {

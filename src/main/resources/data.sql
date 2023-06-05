@@ -1,3 +1,4 @@
+
 CREATE TABLE t_customers (
                              id BIGINT NOT NULL AUTO_INCREMENT,
                              user_name VARCHAR(255) NOT NULL,
