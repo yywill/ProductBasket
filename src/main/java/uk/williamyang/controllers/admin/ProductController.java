@@ -36,6 +36,7 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
         product.setCode(UUID.randomUUID().toString());
+        product.setId(null);
         Product savedProduct = productRepository.save(product);
         log.info("Created product with id {}, code {}", savedProduct.getId(), savedProduct.getCode());
         return ResponseEntity.created(URI.create("/api/products/" + savedProduct.getId())).body(savedProduct);

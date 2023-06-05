@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/admin/v1/discounts")
+@RequestMapping("/admin/api/discounts")
 @Slf4j
 public class DiscountController {
 
@@ -52,9 +52,10 @@ public class DiscountController {
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
             discount.setCode(UUID.randomUUID().toString());
+            discount.setId(null);
             product.setDiscount(discount);
-            productRepository.save(product);
             Discount savedDiscount = discountRepository.save(discount);
+            productRepository.save(product);
             log.info("Created discount with id {}, code {}", savedDiscount.getId(), savedDiscount.getCode());
             return ResponseEntity.ok().body(savedDiscount);
         } else {
@@ -70,7 +71,6 @@ public class DiscountController {
             Product product = productOptional.get();
             return discountRepository.findById(id)
                     .map(discount -> {
-                        discount.setCode(updatedDiscount.getCode());
                         discount.setName(updatedDiscount.getName());
                         product.setDiscount(discount);
                         discount.setDiscountPercentage(updatedDiscount.getDiscountPercentage());
@@ -88,6 +88,13 @@ public class DiscountController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDiscountById(@PathVariable Long id) {
-        discountRepository.deleteById(id);
+        discountRepository.findById(id).ifPresent(discount -> {
+            List<Product> products = productRepository.findByDiscount_Id(discount.getId());
+            products.forEach(product -> {
+                product.setDiscount(null);
+            });
+            productRepository.saveAll(products);
+            discountRepository.delete(discount);
+        });
     }
 }
