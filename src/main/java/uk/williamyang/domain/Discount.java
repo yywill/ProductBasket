@@ -22,7 +22,6 @@ public class Discount {
     @Column
     private String name;
 
-    @NonNull
     @ManyToOne(cascade = CascadeType.PERSIST)
     private Product product;
 

@@ -6,6 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.williamyang.controllers.admin.DiscountController;
@@ -32,7 +34,8 @@ import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class DiscountControllerTest {
 
     @Mock
@@ -98,7 +101,7 @@ public class DiscountControllerTest {
         when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
         when(discountRepository.findById(anyLong())).thenReturn(Optional.of(new Discount()));
         when(discountRepository.save(any(Discount.class))).thenReturn(new Discount());
-        ResponseEntity<Discount> response = discountController.updateDiscount(1L, new Discount(), 1L);
+        ResponseEntity<Discount> response = discountController.updateDiscount(1L, new Discount("code-1",0.2), 1L);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
     }
