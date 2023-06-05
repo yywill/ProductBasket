@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "t_products")
@@ -32,4 +33,7 @@ public class Product {
     @NonNull
     @Column
     String currency;
+
+    @ManyToOne(cascade = CascadeType.DETACH)
+    private Discount discount;
 }

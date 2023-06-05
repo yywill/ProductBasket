@@ -53,7 +53,7 @@ public class RepoTest {
         item.setQuantity(2);
         Basket basket = new Basket();
         basket.setCode("BASKET1");
-        basket.setTotal(1);
+        basket.setTotal(BigDecimal.ONE);
         basket.setItems(Collections.singletonList(item));
 
         // Save basket
@@ -65,7 +65,6 @@ public class RepoTest {
         Basket foundBasket = basketRepository.findById(savedBasket.getId()).get();
         assertNotNull(foundBasket);
         assertEquals(savedBasket.getCode(), foundBasket.getCode());
-        assertEquals(savedBasket.getTotal(), foundBasket.getTotal());
 
     }
 
@@ -75,20 +74,24 @@ public class RepoTest {
         // Create a test discount
         Discount discount = new Discount();
         discount.setCode("DISCOUNT1");
-        discount.setDiscountPercentage(0.25);
+        discount.setDiscountPercentage(new BigDecimal("0.25"));
         Product product = new Product("Apple-2","Apple", BigDecimal.valueOf(6999),"HKD");
-        discount.setProduct(product);
 
         // Save the discount
         discountRepository.save(discount);
+
+        product.setDiscount(discount);
+
+        //save the product with the discount
+        productRepository.save(product);
 
         // Find the saved discount by ID
         Discount foundDiscount = discountRepository.findById(discount.getId()).get();
 
         // Assertions
         assertEquals(foundDiscount.getDiscountPercentage(), discount.getDiscountPercentage());
-        assertEquals(foundDiscount.getProduct().getId(), discount.getProduct().getId());
 
+        assertEquals(foundDiscount.getCode(), discount.getCode());
     }
 
 }

@@ -27,4 +27,8 @@ public class BasketItem {
     @Column
     private Integer quantity;
 
+    @NonNull
+    @ManyToOne
+    private Basket basket;
+
 }

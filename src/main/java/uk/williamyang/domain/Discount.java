@@ -3,6 +3,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "t_discounts")
@@ -22,10 +23,10 @@ public class Discount {
     @Column
     private String name;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    private Product product;
+    @OneToMany(cascade = CascadeType.DETACH)
+    private List<Product> product;
 
     @NonNull
     @Column
-    private Double discountPercentage;
+    private BigDecimal discountPercentage;
 }

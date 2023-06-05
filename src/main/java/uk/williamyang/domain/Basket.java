@@ -26,6 +26,9 @@ public class Basket {
 
     @NonNull
     @Column
-    private Integer total;
+    private BigDecimal total;
+
+    @ManyToOne(cascade = CascadeType.DETACH)
+    private Customer customer;
 
 }

@@ -52,7 +52,8 @@ public class DiscountController {
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
             discount.setCode(UUID.randomUUID().toString());
-            discount.setProduct(product);
+            product.setDiscount(discount);
+            productRepository.save(product);
             Discount savedDiscount = discountRepository.save(discount);
             return ResponseEntity.ok().body(savedDiscount);
         } else {
@@ -70,8 +71,10 @@ public class DiscountController {
                     .map(discount -> {
                         discount.setCode(updatedDiscount.getCode());
                         discount.setName(updatedDiscount.getName());
-                        discount.setProduct(product);
+                        product.setDiscount(discount);
                         discount.setDiscountPercentage(updatedDiscount.getDiscountPercentage());
+
+                        productRepository.save(product);
                         Discount savedDiscount = discountRepository.save(discount);
                         return ResponseEntity.ok().body(savedDiscount);
                     })

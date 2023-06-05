@@ -101,7 +101,7 @@ public class DiscountControllerTest {
         when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
         when(discountRepository.findById(anyLong())).thenReturn(Optional.of(new Discount()));
         when(discountRepository.save(any(Discount.class))).thenReturn(new Discount());
-        ResponseEntity<Discount> response = discountController.updateDiscount(1L, new Discount("code-1",0.2), 1L);
+        ResponseEntity<Discount> response = discountController.updateDiscount(1L, new Discount("code-1",new BigDecimal(0.2)), 1L);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
     }
