@@ -1,10 +1,5 @@
 package uk.williamyang.controllers;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.TestInstance;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -21,18 +16,7 @@ import uk.williamyang.controllers.customer.BasketController;
 import uk.williamyang.domain.*;
 import uk.williamyang.dto.Receipt;
 import uk.williamyang.repo.*;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import uk.williamyang.repo.ProductRepository;
-
-import org.assertj.core.api.Assertions;
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;

@@ -151,7 +151,7 @@ public class BasketController {
     }
 
     @PostMapping("/{basketCode}/checkout")
-    public ResponseEntity<Receipt> checkoutBasket(@PathVariable String basketCode, @RequestHeader("bullish-william-api-key") String apiKey) {
+    public ResponseEntity<Receipt> checkoutBasket(@PathVariable String basketCode, @RequestHeader("api-key") String apiKey) {
         Optional<Basket> basketOptional = basketRepository.findByCode(basketCode);
         if (basketOptional.isPresent()) {
             Basket basket = basketOptional.get();

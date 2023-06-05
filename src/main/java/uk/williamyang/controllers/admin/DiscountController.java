@@ -1,6 +1,5 @@
 package uk.williamyang.controllers.admin;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +15,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/admin/v1/discounts")
+@Slf4j
 public class DiscountController {
 
     private final DiscountRepository discountRepository;
@@ -55,6 +55,7 @@ public class DiscountController {
             product.setDiscount(discount);
             productRepository.save(product);
             Discount savedDiscount = discountRepository.save(discount);
+            log.info("Created discount with id {}, code {}", savedDiscount.getId(), savedDiscount.getCode());
             return ResponseEntity.ok().body(savedDiscount);
         } else {
             return ResponseEntity.notFound().build();
