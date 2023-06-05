@@ -17,9 +17,7 @@ import uk.williamyang.repo.BasketRepository;
 import uk.williamyang.repo.CustomerRepository;
 import uk.williamyang.repo.ProductRepository;
 
-import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +33,13 @@ public class BasketController {
     private final BasketItemRepository basketItemRepository;
     private final CustomerRepository customerRepository;
 
-    public BasketController(BasketRepository basketRepository, BasketItemRepository basketItemRepository, CustomerRepository customerRepository) {
+    private final ProductRepository productRepository;
+
+    public BasketController(BasketRepository basketRepository, BasketItemRepository basketItemRepository, CustomerRepository customerRepository, ProductRepository productRepository) {
         this.basketRepository = basketRepository;
         this.basketItemRepository = basketItemRepository;
         this.customerRepository = customerRepository;
+        this.productRepository = productRepository;
     }
 
     @PostMapping("")
@@ -69,15 +70,19 @@ public class BasketController {
         Optional<Basket> basketOptional = basketRepository.findByCode(basketCode);
         if (basketOptional.isPresent()) {
             Basket basket = basketOptional.get();
+
+            Product product = productRepository.findById(basketItem.getProduct().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
+            basketItem.setId(null);
             basketItem.setBasket(basket);
             basketItem = basketItemRepository.save(basketItem);
-            basket.getItems().add(basketItem);
-            basket.setTotal(
-                    (basket.getTotal() != null ? basket.getTotal() : BigDecimal.ZERO)
-                            .add(
-                                    (new BigDecimal(basketItem.getQuantity()))
-                                            .multiply(basketItem.getProduct().getPrice()))
-            );
+
+            BigDecimal price = product.getPrice();
+            Integer quantity = basketItem.getQuantity();
+            BigDecimal total = basket.getTotal() != null ? basket.getTotal() : BigDecimal.ZERO;
+
+            basket.setTotal(total.add((new BigDecimal(quantity)).multiply(price)));
+
             basketRepository.save(basket);
             return ResponseEntity.ok(basketItem);
         } else {
@@ -90,34 +95,33 @@ public class BasketController {
         Optional<Basket> basketOptional = basketRepository.findByCode(basketCode);
         if (basketOptional.isPresent()) {
             Basket basket = basketOptional.get();
-            Optional<BasketItem> basketItemOptional = basket.getItems().stream().filter(item -> item.getId().equals(itemId)).findFirst();
-            if (basketItemOptional.isPresent()) {
-                BasketItem basketItem = basketItemOptional.get();
 
-                basket.setTotal(
-                        (basket.getTotal() != null ? basket.getTotal() : BigDecimal.ZERO)
-                                .subtract(
-                                        (new BigDecimal(basketItem.getQuantity()))
-                                                .multiply(basketItem.getProduct().getPrice()))
-                );
+            BasketItem basketItem = basketItemRepository.findById(itemId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Basket item not found"));
 
-                basketItem.setProduct(updatedBasketItem.getProduct());
-                basketItem.setQuantity(updatedBasketItem.getQuantity());
-                basketItem = basketItemRepository.save(basketItem);
-
-                basket.setTotal(
-                        (basket.getTotal() != null ? basket.getTotal() : BigDecimal.ZERO)
-                                .add(
-                                        (new BigDecimal(basketItem.getQuantity()))
-                                                .multiply(basketItem.getProduct().getPrice())
-                                )
-                );
-
-                basketRepository.save(basket);
-                return ResponseEntity.ok(basketItem);
-            } else {
-                return ResponseEntity.notFound().build();
+            if(!basketCode.equalsIgnoreCase(basketItem.getBasket().getCode())){
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Basket not matching basket item");
             }
+
+            Product product = productRepository.findById(basketItem.getProduct().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
+            BigDecimal price = product.getPrice();
+            Integer quantity = basketItem.getQuantity();
+            BigDecimal total = basket.getTotal() != null ? basket.getTotal() : BigDecimal.ZERO;
+
+            basket.setTotal(total.subtract((new BigDecimal(quantity)).multiply(price)));
+
+            basketItem.setProduct(updatedBasketItem.getProduct());
+            basketItem.setQuantity(updatedBasketItem.getQuantity());
+            basketItem = basketItemRepository.save(basketItem);
+
+            price = product.getPrice();
+            quantity = basketItem.getQuantity();
+            total = basket.getTotal() != null ? basket.getTotal() : BigDecimal.ZERO;
+
+            basket.setTotal(total.add((new BigDecimal(quantity)).multiply(price)));
+
+            basketRepository.save(basket);
+            return ResponseEntity.ok(basketItem);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -128,23 +132,35 @@ public class BasketController {
         Optional<Basket> basketOptional = basketRepository.findByCode(basketCode);
         if (basketOptional.isPresent()) {
             Basket basket = basketOptional.get();
+
             List<BasketItem> items = new ArrayList<>(basket.getItems());
-            Optional<BasketItem> basketItemOptional = items.stream().filter(item -> item.getId().equals(itemId)).findFirst();
-            if (basketItemOptional.isPresent()) {
-                BasketItem basketItem = basketItemOptional.get();
-                basket.setTotal(
-                        (basket.getTotal() != null ? basket.getTotal() : BigDecimal.ZERO).subtract(
-                                (new BigDecimal(basketItem.getQuantity())).multiply(basketItem.getProduct().getPrice())
-                        )
-                );
-                items.remove(basketItem);
-                basket.setItems(items);
-                basketRepository.save(basket);
-                basketItemRepository.delete(basketItem);
-                return ResponseEntity.noContent().build();
-            } else {
-                return ResponseEntity.notFound().build();
-            }
+
+            BasketItem basketItem = basketItemRepository.findById(itemId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Basket item not found"));
+
+            Product product = productRepository.findById(basketItem.getProduct().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
+            BigDecimal price = product.getPrice();
+            Integer quantity = basketItem.getQuantity();
+            BigDecimal total = basket.getTotal() != null ? basket.getTotal() : BigDecimal.ZERO;
+
+            basket.setTotal(total.subtract((new BigDecimal(quantity)).multiply(price)));
+
+            items.remove(basketItem);
+            basket.setItems(items);
+            basketRepository.save(basket);
+            basketItemRepository.delete(basketItem);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/{basketCode}/items/{itemId}")
+    public ResponseEntity<BasketItem> getBasketItem(@PathVariable String basketCode, @PathVariable Long itemId) {
+        Optional<Basket> basketOptional = basketRepository.findByCode(basketCode);
+        if (basketOptional.isPresent()) {
+            BasketItem basketItem = basketItemRepository.findById(itemId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Basket item not found"));
+            return ResponseEntity.ok(basketItem);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -153,6 +169,7 @@ public class BasketController {
     @PostMapping("/{basketCode}/checkout")
     public ResponseEntity<Receipt> checkoutBasket(@PathVariable String basketCode, @RequestHeader("api-key") String apiKey) {
         Optional<Basket> basketOptional = basketRepository.findByCode(basketCode);
+        log.info("Checkout basket with all {}", customerRepository.findAll());
         if (basketOptional.isPresent()) {
             Basket basket = basketOptional.get();
             Optional<Customer> customerOptional = customerRepository.findByApiKey(apiKey);

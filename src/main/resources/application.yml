@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb   # JDBC URL for H2 in-memory database
+    driverClassName: org.h2.Driver   # H2 JDBC driver class name
+    username: sa   # default H2 database username
+    password:   # default H2 database password (empty)
+  jpa:
+    hibernate:
+      ddl-auto: update  # set the Hibernate DDL mode to "update"
+    generate-ddl: false
+  h2:
+    console:
+      enabled: true   # enables H2 web console
+      path: /h2-console   # URL path for accessing H2 web console

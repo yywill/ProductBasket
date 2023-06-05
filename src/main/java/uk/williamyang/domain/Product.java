@@ -35,5 +35,6 @@ public class Product {
     String currency;
 
     @ManyToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "discount_id")
     private Discount discount;
 }

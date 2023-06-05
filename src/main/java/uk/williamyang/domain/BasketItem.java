@@ -1,11 +1,12 @@
 package uk.williamyang.domain;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "t_basket_items")
+@Table(name = "t_baskets_items")
 @Data
 @RequiredArgsConstructor
 @NoArgsConstructor
@@ -27,8 +28,9 @@ public class BasketItem {
     @Column
     private Integer quantity;
 
-    @NonNull
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "basket_id")
+    @JsonIgnore
     private Basket basket;
 
 }

@@ -21,14 +21,14 @@ public class Basket {
     @Column
     private String code;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.DETACH, mappedBy = "basket")
     private List<BasketItem> items = new ArrayList<>();
 
     @NonNull
     @Column
     private BigDecimal total;
 
-    @ManyToOne(cascade = CascadeType.DETACH)
+    @ManyToOne(cascade = CascadeType.REFRESH)
     private Customer customer;
 
 }
