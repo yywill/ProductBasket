@@ -13,7 +13,7 @@ import java.util.List;
 public class Basket {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NonNull

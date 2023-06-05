@@ -12,13 +12,15 @@ import java.math.BigDecimal;
 public class Discount {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
 
     @NonNull
     @Column
     private String code;
+
+    @Column
+    private String name;
 
     @NonNull
     @ManyToOne(cascade = CascadeType.PERSIST)

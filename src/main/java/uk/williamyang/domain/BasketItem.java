@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 public class BasketItem {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NonNull

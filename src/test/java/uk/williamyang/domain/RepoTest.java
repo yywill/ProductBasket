@@ -1,5 +1,6 @@
 package uk.williamyang.domain;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +16,7 @@ import static org.junit.Assert.assertNotNull;
 
 
 @SpringBootTest
+@Slf4j
 public class RepoTest {
 
     @Autowired
@@ -43,8 +45,6 @@ public class RepoTest {
 
     }
 
-
-
     @Test
     public void testSaveAndFindBasket() {
 
@@ -58,6 +58,8 @@ public class RepoTest {
 
         // Save basket
         Basket savedBasket = basketRepository.save(basket);
+
+        log.info("Saved basket: {}", savedBasket);
 
         // Find basket and assert
         Basket foundBasket = basketRepository.findById(savedBasket.getId()).get();
