@@ -39,6 +39,24 @@ Swagger UI available at http://localhost:8080/swagger-ui.html
 mvn test
 ```
 
+### Run Complied Jar
+
+```shell
+java -jar -Dspring.profiles.active=testnet  bullish-williamyang-project.jar
+```
+
+HINT: to look at H2 Database, visit
+```shell
+http://localhost:8080/h2-console/
+```
+
+To login:
+
+```yaml
+JDBC URL: jdbc:h2:mem:testdb
+User Name: sa
+```
+
 ### REST API
 
 #### Products
@@ -56,3 +74,4 @@ mvn test
 See Swagger UI for full API details.
 
 Hope this README captures the important details about the project! Let me know if you have any questions or suggestions for improvements.
+
