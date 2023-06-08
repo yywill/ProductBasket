@@ -27,18 +27,6 @@ This project implements a Restful API for an electronics store's checkout system
 
 ## Usage
 
-### Running the application
-
-```
-mvn spring-boot:run
-```
-
-### Running tests
-
-```
-mvn test
-```
-
 ### Compile it to all-in-one Jar 
 
 ```
