@@ -39,6 +39,12 @@ mvn spring-boot:run
 mvn test
 ```
 
+### Compile it to all-in-one Jar 
+
+```
+mvn clean package
+```
+
 ### Database Credentials
 
 ```
