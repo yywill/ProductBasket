@@ -160,6 +160,53 @@ On checkout, a receipt is generated and returned with:
 - List of receipt items
 - Total price
 
+
+# Test Driven Design
+
+## Unit Tests
+
+### Domain Tests
+
+- Uses @SpringBootTest to boot up the full application context
+- Tests the JPA repositories directly
+- No mocking involved, uses the actual database
+
+Examples:
+
+- `RepoTest`
+  - Tests saving and finding products, baskets and discounts
+  - Uses the product, basket and discount repositories
+
+### Controller Tests
+
+- Uses @SpringBootTest and @AutoConfigureMockMvc
+- Boots up only the web layer, mocks dependencies
+- Tests the actual controller layer
+- No interaction with the database
+
+Examples:
+
+- `ProductControllerTest`
+  - Mocks the product repository
+  - Tests the different product endpoints
+  - Asserts the HTTP status codes and response bodies
+
+- `DiscountControllerTest`
+  - Mocks the discount and product repositories
+  - Injects the controller using @InjectMocks
+  - Tests all discount endpoints
+
+- `BasketControllerTest`
+  - Mocks the basket, customer and product repositories
+  - Tests creating, updating and deleting basket items
+  - Tests checking out a basket and verifying the receipt
+
+Key Points:
+
+- Domain tests are faster since they interact with the actual database
+- Controller tests are isolated since they mock dependencies
+- Ideally you want both types of tests to ensure full coverage
+
 ## Integration test by Pytest
 
 The intergration test is written by Pytest. It will test the API endpoints and the database.
