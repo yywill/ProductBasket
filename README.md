@@ -109,6 +109,42 @@ User Name: sa
 
 The checkout endpoint requires an `api-key` header with the customer's API key.
 
+The `test_checkout_basket()` test uses the default API key:
+
+`API-KEY-123456`
+
+### t_customers Table
+
+| id | user_name | client_display_name | api_key          |
+| -- | -- | -- |-- |
+| 1  | yywill | William Yang | API-KEY-123456|
+| 2  | yy | Yang Yang | API-KEY-789012|
+
+This table contains customer information:
+
+- `id` - Auto incrementing primary key
+- `user_name` - The customer's username
+- `client_display_name` - The customer's full name
+- `api_key` - The customer's API key
+
+Two sample customers were inserted:
+
+- William Yang with API key `API-KEY-123456`
+- Yang Yang with API key `API-KEY-789012`
+
+This API key is required in the `api-key` header to checkout a basket:
+
+```python
+headers = {
+    "api-key": "API-KEY-123456" 
+}
+response = requests.post(url, headers=headers)
+```
+
+Hope this helps clarify! Let me know if you have any other questions.
+
+
+
 On checkout, a receipt is generated and returned with:
 
 - Customer info
