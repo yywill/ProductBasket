@@ -73,6 +73,8 @@ User Name: sa
 
 ### Admin Endpoints
 
+[Open API Documentation](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/yywill/ProductBasket/main/src/main/resources/admin-api.yaml)
+
 - Products:
   - GET /api/products
     - Get all products with pagination. Pass:
@@ -103,6 +105,8 @@ User Name: sa
   - DELETE /api/discounts/{id}
 
 ### Customer(Basket) Endpoints
+
+[Open API Documentation](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/yywill/ProductBasket/main/src/main/resources/customer-api.yaml)
 
 - Create basket: `POST /api/baskets`
 - Get basket by code: `GET /api/baskets/{code}`
